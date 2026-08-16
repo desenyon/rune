@@ -1,0 +1,5 @@
+[project]
+name = "py-util"
+version = "0.1.0"
+description = "Python package inside the mixed monorepo fixture."
+requires-python = ">=3.11"
