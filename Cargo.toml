@@ -1,0 +1,130 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/storage",
+    "crates/graph",
+    "crates/security",
+    "crates/telemetry",
+    "crates/providers",
+    "crates/terminal",
+    "crates/compression",
+    "crates/context_compiler",
+    "crates/motion",
+    "crates/index",
+    "crates/git_intelligence",
+    "crates/worktrees",
+    "crates/sessions",
+    "crates/history",
+    "crates/tools",
+    "crates/agent_runtime",
+    "crates/mcp",
+    "crates/plugins",
+    "crates/semantic",
+    "crates/memory",
+    "crates/search",
+    "crates/specs",
+    "crates/tasks",
+    "crates/handoff",
+    "crates/docs_context",
+    "crates/ui",
+    "crates/cli",
+    "crates/app",
+    "crates/evals",
+    "apps/rune",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+rust-version = "1.85"
+authors = ["Rune Contributors"]
+description = "Rune is a local-first Context OS for AI-assisted software development."
+homepage = "https://github.com/desenyon/rune"
+repository = "https://github.com/desenyon/rune"
+readme = "README.md"
+
+[workspace.dependencies]
+rune-app = { path = "crates/app" }
+rune-core = { path = "crates/core" }
+rune-storage = { path = "crates/storage" }
+rune-graph = { path = "crates/graph" }
+rune-index = { path = "crates/index" }
+rune-semantic = { path = "crates/semantic" }
+rune-search = { path = "crates/search" }
+rune-memory = { path = "crates/memory" }
+rune-sessions = { path = "crates/sessions" }
+rune-history = { path = "crates/history" }
+rune-git-intelligence = { path = "crates/git_intelligence" }
+rune-specs = { path = "crates/specs" }
+rune-tasks = { path = "crates/tasks" }
+rune-handoff = { path = "crates/handoff" }
+rune-context-compiler = { path = "crates/context_compiler" }
+rune-providers = { path = "crates/providers" }
+rune-agent-runtime = { path = "crates/agent_runtime" }
+rune-worktrees = { path = "crates/worktrees" }
+rune-tools = { path = "crates/tools" }
+rune-docs-context = { path = "crates/docs_context" }
+rune-compression = { path = "crates/compression" }
+rune-plugins = { path = "crates/plugins" }
+rune-mcp = { path = "crates/mcp" }
+rune-security = { path = "crates/security" }
+rune-telemetry = { path = "crates/telemetry" }
+rune-evals = { path = "crates/evals" }
+rune-ui = { path = "crates/ui" }
+rune-motion = { path = "crates/motion" }
+rune-terminal = { path = "crates/terminal" }
+rune-cli = { path = "crates/cli" }
+
+anyhow = "1.0"
+async-trait = "0.1"
+base64 = "0.22"
+blake3 = "1.8"
+bytes = "1.10"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.5", features = ["derive", "env"] }
+clap_complete = "4.5"
+crossterm = { version = "0.28", features = ["event-stream"] }
+dirs = "6.0"
+futures = "0.3"
+globset = "0.4"
+hex = "0.4"
+ignore = "0.4"
+indexmap = { version = "2.8", features = ["serde"] }
+notify = { version = "8.0", features = ["macos_kqueue"] }
+nucleo = "0.5"
+parking_lot = "0.12"
+pulldown-cmark = "0.13"
+ratatui = { version = "0.29", features = ["crossterm", "unstable-rendered-line-info"] }
+regex = "1.11"
+rusqlite = { version = "0.32", features = ["bundled", "backup", "blob", "limits", "functions", "trace"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+sha2 = "0.10"
+thiserror = "2.0"
+tokio = { version = "1.44", features = ["full"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "fmt"] }
+tree-sitter = "0.24"
+tree-sitter-go = "0.23"
+tree-sitter-javascript = "0.23"
+tree-sitter-python = "0.23"
+tree-sitter-rust = "0.23"
+tree-sitter-typescript = "0.23"
+unicode-segmentation = "1.12"
+unicode-width = "0.2"
+uuid = { version = "1.16", features = ["v7", "serde"] }
+walkdir = "2.5"
+which = "7.0"
+tempfile = "3.19"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
+[profile.dev.package."*"]
+opt-level = 1
