@@ -1,0 +1,20 @@
+[package]
+name = "rune-security"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Permission boundaries, secret redaction, and untrusted content handling."
+
+[dependencies]
+regex.workspace = true
+rune-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+rune-storage.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
