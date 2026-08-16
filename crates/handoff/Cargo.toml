@@ -1,0 +1,20 @@
+[package]
+name = "rune-handoff"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Cross-agent handoff objects, lineage, and handoff compilation."
+
+[dependencies]
+rune-core.workspace = true
+rune-storage.workspace = true
+rune-graph.workspace = true
+rune-context-compiler.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
