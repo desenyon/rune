@@ -1,0 +1,22 @@
+[package]
+name = "rune-search"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Universal search across the Rune canonical graph: exact, fuzzy, FTS, structural, graph, temporal, and hybrid."
+
+[dependencies]
+nucleo.workspace = true
+rune-core.workspace = true
+rune-graph.workspace = true
+rune-security.workspace = true
+rune-storage.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
