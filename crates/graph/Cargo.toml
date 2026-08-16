@@ -1,0 +1,18 @@
+[package]
+name = "rune-graph"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Canonical graph queries, path tracing, and neighborhood expansion."
+
+[dependencies]
+rune-core.workspace = true
+rune-storage.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
