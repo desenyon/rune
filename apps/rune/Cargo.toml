@@ -1,0 +1,15 @@
+[package]
+name = "rune"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Rune command-line application."
+
+[[bin]]
+name = "rune"
+path = "src/main.rs"
+
+[dependencies]
+rune-cli.workspace = true
