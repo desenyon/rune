@@ -1,0 +1,19 @@
+[package]
+name = "rune-history"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Git-anchored historical reasoning graph queries for Rune."
+
+[dependencies]
+rune-core.workspace = true
+rune-graph.workspace = true
+rune-storage.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
