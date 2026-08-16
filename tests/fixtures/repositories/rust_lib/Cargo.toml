@@ -1,0 +1,9 @@
+[package]
+name = "rune_fixture_rust_lib"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Small Cargo library fixture for Rune indexer tests."
+
+[lib]
+path = "src/lib.rs"
