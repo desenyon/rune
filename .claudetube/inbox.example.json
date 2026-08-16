@@ -1,0 +1,21 @@
+[
+  {
+    "action": "play",
+    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  },
+  {
+    "action": "enqueue",
+    "url": "https://youtu.be/VIDEO_ID"
+  },
+  {
+    "action": "toggle"
+  },
+  {
+    "action": "setLayout",
+    "layout": "mini"
+  },
+  {
+    "action": "setPlaybackRate",
+    "rate": 1.5
+  }
+]
