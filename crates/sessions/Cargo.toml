@@ -1,0 +1,27 @@
+[package]
+name = "rune-sessions"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Coding-agent session discovery, import, and heuristic intelligence for Rune."
+
+[dependencies]
+async-trait.workspace = true
+dirs.workspace = true
+regex.workspace = true
+rune-core.workspace = true
+rune-providers.workspace = true
+rune-security.workspace = true
+rune-storage.workspace = true
+rune-memory.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+walkdir.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
