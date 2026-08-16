@@ -1,0 +1,9 @@
+[package]
+name = "mixed_core"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Rust crate inside the mixed monorepo fixture."
+
+[lib]
+path = "src/lib.rs"
