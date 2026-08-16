@@ -16,7 +16,7 @@ use rune_docs_context::Context7Provider;
 use rune_git_intelligence::{GitIndexReport, GitIndexer, GitIntelError};
 use rune_graph::ExpandFilter;
 use rune_handoff::{HandoffCompiler, HandoffMode};
-use rune_index::{Indexer, WorkspaceScanReport};
+use rune_index::{impact_for_files, Indexer, WorkspaceScanReport};
 use rune_memory::{CodeChange, FreshnessEngine, FreshnessJudgment, MemoryStore};
 use rune_providers::ProviderRegistry;
 use rune_search::{SearchEngine, SearchMode, SearchRequest};
@@ -94,7 +94,7 @@ pub enum Commands {
         query: String,
         #[arg(long, default_value_t = 20)]
         limit: usize,
-        /// Force a retrieval mode: exact, fuzzy, full_text, structural, graph, temporal, hybrid.
+        /// Force a retrieval mode: exact, fuzzy, full_text, structural, semantic, graph, temporal, hybrid.
         #[arg(long)]
         mode: Option<String>,
     },
@@ -143,6 +143,28 @@ pub enum Commands {
     },
     /// Generate shell completions.
     Completions { shell: Shell },
+    /// Run evaluation suites (S062–S065).
+    Eval {
+        #[arg(long)]
+        name: Option<String>,
+    },
+    /// Show graph impact of changed files (S050).
+    Impact {
+        #[arg(long)]
+        file: Option<String>,
+    },
+    /// Package a distributable binary for the host target (S085).
+    Package {
+        #[arg(long)]
+        out: Option<PathBuf>,
+    },
+    /// Write a local sanitized crash bundle (S087).
+    Crash {
+        #[arg(long)]
+        out: Option<PathBuf>,
+    },
+    /// Check for updates without replacing the running binary (S086).
+    Update,
 }
 
 #[derive(Subcommand, Debug, Clone)]
@@ -397,6 +419,61 @@ fn run_cli(cli: Cli) -> Result<()> {
                 app.export(fmt, &nodes)?
             };
             println!("{text}");
+        }
+        Commands::Eval { name } => {
+            let results = if let Some(name) = name {
+                vec![rune_evals::run_named(&name).map_err(CliError::Message)?]
+            } else {
+                rune_evals::all_evals()
+            };
+            let _ = rune_evals::maybe_write_benchmarks(&results);
+            emit(cli.format, &results)?;
+            if results.iter().any(|result| !result.passed) {
+                return Err(CliError::Message("evaluation suite failed".into()));
+            }
+        }
+        Commands::Impact { file } => {
+            let ids = if let Some(name) = file {
+                let node = app
+                    .store
+                    .find_node_by_name(NodeKind::File, &name)?
+                    .ok_or_else(|| CliError::Message(format!("file `{name}` not indexed")))?;
+                vec![node.id]
+            } else {
+                app.store
+                    .nodes_of_kind(NodeKind::File)?
+                    .into_iter()
+                    .take(12)
+                    .map(|node| node.id)
+                    .collect()
+            };
+            emit(cli.format, &impact_for_files(&app.store, &ids)?)?;
+        }
+        Commands::Package { out } => {
+            let dest_dir = out.unwrap_or_else(|| workspace.join("dist"));
+            std::fs::create_dir_all(&dest_dir)?;
+            let dest = dest_dir.join(format!(
+                "rune-{}-{}",
+                std::env::consts::ARCH,
+                std::env::consts::OS
+            ));
+            app.refuse_replace_running_binary(&dest)?;
+            let exe = std::env::current_exe()?;
+            std::fs::copy(&exe, &dest)?;
+            emit(
+                cli.format,
+                &serde_json::json!({"binary": dest, "source": exe}),
+            )?;
+        }
+        Commands::Crash { out } => {
+            let bundle = app.crash_bundle(None)?;
+            if let Some(path) = out {
+                std::fs::write(&path, serde_json::to_string_pretty(&bundle).unwrap())?;
+            }
+            emit(cli.format, &bundle)?;
+        }
+        Commands::Update => {
+            emit(cli.format, &app.check_update(None)?)?;
         }
         Commands::Completions { .. } | Commands::Doctor | Commands::Onboard | Commands::Tui => {
             unreachable!()

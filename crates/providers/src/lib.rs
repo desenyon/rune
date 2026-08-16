@@ -83,6 +83,12 @@ pub trait Provider: Send + Sync {
     fn capabilities(&self) -> BTreeSet<Capability>;
     fn required_permissions(&self) -> BTreeSet<Permission>;
 
+    /// What content leaves the machine when this provider is invoked.
+    /// `None` means the provider is local-only.
+    fn data_leaving_machine(&self) -> Option<&'static str> {
+        None
+    }
+
     fn supports(&self, capability: &Capability) -> bool {
         self.capabilities().contains(capability)
     }
@@ -149,6 +155,13 @@ impl ProviderRegistry {
     pub fn require(&self, id: &str) -> Result<&dyn Provider> {
         self.get(id)
             .ok_or_else(|| ProviderError::Unavailable(id.to_string(), "not registered".into()))
+    }
+
+    pub fn ids(&self) -> Vec<String> {
+        self.providers
+            .iter()
+            .map(|provider| provider.identity().id)
+            .collect()
     }
 }
 

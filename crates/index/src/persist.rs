@@ -7,12 +7,20 @@ use std::str::FromStr;
 const SCOPE: &str = "index";
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PendingCall {
+    pub callee: String,
+    pub caller_id: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileRecord {
     pub node_id: String,
     pub content_hash: String,
     pub path: String,
     pub symbol_ids: Vec<String>,
     pub import_ids: Vec<String>,
+    #[serde(default)]
+    pub pending_calls: Vec<PendingCall>,
 }
 
 pub fn load_file_record(store: &Store, file_key: &str) -> Result<Option<FileRecord>> {

@@ -85,6 +85,20 @@ impl SearchRouter {
                 reason: "query constrains results by time".into(),
             };
         }
+        if looks_like_semantic(trimmed) {
+            return QueryIntent {
+                mode: SearchMode::Semantic,
+                query: trimmed.to_string(),
+                quoted: None,
+                path_from: None,
+                path_to: None,
+                structural_kind: None,
+                structural_name: None,
+                after: None,
+                before: None,
+                reason: "query asks for meaning, similarity, or why-style retrieval".into(),
+            };
+        }
         if looks_like_fts(trimmed) {
             return QueryIntent {
                 mode: SearchMode::FullText,
@@ -230,6 +244,15 @@ fn take_after_keyword(lower: &str, original: &str, keyword: &str) -> Option<Stri
     let rest = original[start + keyword.len()..].trim();
     let token = rest.split_whitespace().next()?.to_string();
     Some(token)
+}
+
+fn looks_like_semantic(query: &str) -> bool {
+    let lower = query.to_ascii_lowercase();
+    lower.starts_with("why ")
+        || lower.starts_with("similar to ")
+        || lower.starts_with("meaning of ")
+        || lower.contains("semantically")
+        || lower.starts_with("what does ")
 }
 
 fn looks_like_fts(query: &str) -> bool {

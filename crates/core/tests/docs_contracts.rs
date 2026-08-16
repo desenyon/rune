@@ -104,3 +104,56 @@ fn s069_compatibility_matrix_exists() {
         assert!(body.contains(needle), "compatibility matrix missing {needle}");
     }
 }
+
+#[test]
+fn s001_to_s100_have_exactly_one_build_state() {
+    let body = fs::read_to_string(root().join("docs/BUILD_STATE.md")).unwrap();
+    let summary = body.split("Highest-leverage").next().expect("summary");
+    let mut summary_status = std::collections::BTreeMap::new();
+    for line in summary.lines() {
+        let Some(rest) = line.strip_prefix("| S") else {
+            continue;
+        };
+        if rest.starts_with("pec") {
+            continue;
+        }
+        let cols: Vec<_> = rest.split('|').map(str::trim).collect();
+        if cols.len() < 4 {
+            continue;
+        }
+        let spec = format!("S{}", cols[0].split_whitespace().next().unwrap());
+        assert!(
+            summary_status.insert(spec.clone(), cols[2].to_string()).is_none(),
+            "duplicate summary row for {spec}"
+        );
+    }
+    let mut detail_status = std::collections::BTreeMap::new();
+    let mut current = None;
+    for line in body.lines() {
+        if let Some(rest) = line.strip_prefix("## S") {
+            current = rest.split_whitespace().next().map(|n| format!("S{n}"));
+            continue;
+        }
+        if let (Some(spec), true) = (current.as_ref(), line.starts_with("- current status:")) {
+            let status = line.split(':').nth(1).unwrap().trim().to_string();
+            assert!(
+                detail_status.insert(spec.clone(), status).is_none(),
+                "duplicate detailed section for {spec}"
+            );
+            current = None;
+        }
+    }
+    for i in 1..=100 {
+        let spec = format!("S{i:03}");
+        let summary = summary_status.get(&spec).unwrap_or_else(|| panic!("missing summary {spec}"));
+        let detail = detail_status.get(&spec).unwrap_or_else(|| panic!("missing detail {spec}"));
+        assert_eq!(summary, detail, "{spec} summary status {summary} != detail {detail}");
+        assert!(
+            matches!(
+                summary.as_str(),
+                "planned" | "active" | "blocked" | "verification" | "complete"
+            ),
+            "{spec} has invalid status {summary}"
+        );
+    }
+}

@@ -2,7 +2,9 @@
 
 pub mod background;
 pub mod discovery;
+pub mod documents;
 pub mod error;
+pub mod impact;
 pub mod indexer;
 pub mod languages;
 pub mod persist;
@@ -13,6 +15,8 @@ pub mod watch;
 pub use background::{BackgroundIndexer, IndexJob, IndexQueue};
 pub use discovery::{discover, DiscoveredFile, WorkspaceDiscovery};
 pub use error::{IndexError, Result};
+pub use documents::{parse_document, ParsedDocument, ParsedSection};
+pub use impact::{impact_for_files, DiffImpact};
 pub use indexer::{IndexedChange, Indexer, TestRun, WorkspaceScanReport};
 pub use languages::{file_key, MonorepoKind, SourceLanguage, WorktreeListing};
 pub use process::{discover_processes, ProcessInfo};
@@ -134,5 +138,53 @@ mod tests {
         let discovered = discover(dir.path()).unwrap();
         assert_eq!(discovered.monorepo, Some(MonorepoKind::CargoWorkspace));
         assert!(discovered.package_managers.iter().any(|m| m == "cargo"));
+    }
+
+    #[test]
+    fn cross_file_calls_are_resolved() {
+        let (_tmp, root) = init_repo();
+        fs::write(root.join("a.rs"), "pub fn greet() {}\n").unwrap();
+        fs::write(
+            root.join("b.rs"),
+            "pub fn hello() { greet(); }\n",
+        )
+        .unwrap();
+        let store = Store::open_in_memory().unwrap();
+        let indexer = Indexer::new(store, &root).unwrap();
+        indexer.scan_workspace().unwrap();
+        let functions = indexer.store().nodes_of_kind(NodeKind::Function).unwrap();
+        let greet = functions
+            .iter()
+            .find(|n| n.name.as_deref() == Some("greet"))
+            .unwrap();
+        let hello = functions
+            .iter()
+            .find(|n| n.name.as_deref() == Some("hello"))
+            .unwrap();
+        let edge = indexer
+            .store()
+            .find_edge(hello.id, greet.id, rune_core::EdgeKind::Calls)
+            .unwrap();
+        assert!(edge.is_some(), "expected hello -> greet call edge");
+    }
+
+    #[test]
+    fn markdown_is_indexed_as_document_sections() {
+        let (_tmp, root) = init_repo();
+        fs::write(
+            root.join("ADR.md"),
+            "# Decision\n\nUse SQLite.\n\n## Consequences\n\nLocal first.\n",
+        )
+        .unwrap();
+        let store = Store::open_in_memory().unwrap();
+        let indexer = Indexer::new(store, &root).unwrap();
+        indexer.scan_workspace().unwrap();
+        let docs = indexer.store().nodes_of_kind(NodeKind::Document).unwrap();
+        assert!(!docs.is_empty());
+        let sections = indexer
+            .store()
+            .nodes_of_kind(NodeKind::DocumentationSection)
+            .unwrap();
+        assert!(sections.iter().any(|n| n.name.as_deref() == Some("Decision")));
     }
 }

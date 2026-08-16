@@ -2,7 +2,7 @@
 
 External tools are implementation providers. Rune is the system of record.
 
-`rune-providers` already defines `Provider`, `ProviderIdentity`, `Capability`, and request/response types. Concrete adapters are not implemented.
+`rune-providers` defines `Provider`, `ProviderIdentity`, `Capability`, request/response types, and `data_leaving_machine` (S088). Concrete adapters exist for coding-agent sessions, developer tools, Context7 documentation (HTTPS via ureq, DEC-011), MCP, plugins, and pluggable semantic backends (DEC-010). Unsupported operations fail clearly (DEC-008).
 
 ## Trait (specified)
 

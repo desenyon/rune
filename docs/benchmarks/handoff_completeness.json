@@ -1,0 +1,10 @@
+{
+  "name": "handoff_completeness",
+  "passed": true,
+  "metrics": {
+    "missing_fields": 0.0
+  },
+  "details": {
+    "missing": []
+  }
+}

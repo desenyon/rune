@@ -120,6 +120,7 @@ uuid = { version = "1.16", features = ["v7", "serde"] }
 walkdir = "2.5"
 which = "7.0"
 tempfile = "3.19"
+ureq = { version = "2.12", default-features = false, features = ["tls"] }
 
 [profile.release]
 lto = "thin"

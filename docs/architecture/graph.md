@@ -4,7 +4,7 @@ The canonical information model is: **everything is an object, every object can 
 
 Storage is SQLite `nodes`, `edges`, and `provenance` tables with JSON payloads (DEC-002). Identifiers are UUID v7. Content is Blake3-hashed. Line numbers are locators, not identities (DEC-003).
 
-`rune-graph` currently exposes neighborhood expansion and path tracing over `rune-storage`. Semantic summaries, multimodal documents, and Git-anchored history are specified and not yet implemented.
+`rune-graph` exposes neighborhood expansion and path tracing over `rune-storage`. Semantic component summaries (S004), multimodal documents (S005), Git-anchored history (S008), and cross-file call edges (DEC-012) are implemented and in verification. Neural embeddings remain optional (DEC-010).
 
 ## Model
 

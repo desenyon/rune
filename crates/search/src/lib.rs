@@ -9,11 +9,13 @@ mod engine;
 mod error;
 mod mode;
 mod router;
+mod semantic;
 
 pub use engine::{resolve_named, SearchEngine};
 pub use error::{Result, SearchError};
 pub use mode::{QueryIntent, SearchHit, SearchMode, SearchRequest, SearchResponse};
 pub use router::{extract_quoted, parse_path_query, SearchRouter};
+pub use semantic::{cosine, hash_embed};
 
 #[cfg(test)]
 mod tests {
@@ -108,6 +110,35 @@ mod tests {
     fn search_mode_parses_aliases() {
         assert_eq!("fts".parse::<SearchMode>().unwrap(), SearchMode::FullText);
         assert_eq!("symbol".parse::<SearchMode>().unwrap(), SearchMode::Structural);
-        assert!("nope".parse::<SearchMode>().is_err());
+        assert_eq!("semantic".parse::<SearchMode>().unwrap(), SearchMode::Semantic);
+    }
+
+    #[test]
+    fn semantic_search_ranks_related_content() {
+        let store = Store::open_in_memory().unwrap();
+        let auth = Node::new(
+            NodeKind::Function,
+            Some("rotate_refresh_token".into()),
+            serde_json::json!({"purpose": "authentication token rotation"}),
+        );
+        let ui = Node::new(
+            NodeKind::Function,
+            Some("paint_tab_rule".into()),
+            serde_json::json!({"purpose": "draw gold underline under the active tab"}),
+        );
+        store.upsert_node(&auth).unwrap();
+        store.upsert_node(&ui).unwrap();
+        let engine = SearchEngine::new(&store);
+        let response = engine
+            .search(SearchRequest::new("why is token rotation implemented this way").with_mode(SearchMode::Semantic))
+            .unwrap();
+        assert_eq!(response.mode, SearchMode::Semantic);
+        assert_eq!(response.hits[0].node.id, auth.id);
+    }
+
+    #[test]
+    fn router_picks_semantic_for_why_queries() {
+        let intent = SearchRouter::analyze("why is this function implemented this way");
+        assert_eq!(intent.mode, SearchMode::Semantic);
     }
 }

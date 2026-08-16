@@ -11,6 +11,7 @@ use crate::catalog::{haystack, load_nodes};
 use crate::error::{Result, SearchError};
 use crate::mode::{SearchHit, SearchMode, SearchRequest, SearchResponse};
 use crate::router::{parse_path_query, parse_structural_prefix, require_non_empty, SearchRouter};
+use crate::semantic::{cosine, hash_embed};
 
 pub struct SearchEngine<'a> {
     store: &'a Store,
@@ -39,6 +40,7 @@ impl<'a> SearchEngine<'a> {
             SearchMode::Fuzzy => self.fuzzy(&request)?,
             SearchMode::FullText => self.full_text(&request)?,
             SearchMode::Structural => self.structural(&request, &intent)?,
+            SearchMode::Semantic => self.semantic(&request)?,
             SearchMode::Graph => self.graph(&request, &intent)?,
             SearchMode::Temporal => self.temporal(&request)?,
             SearchMode::Hybrid => self.hybrid(&request, &intent)?,
@@ -170,6 +172,28 @@ impl<'a> SearchEngine<'a> {
         Ok(response(SearchMode::Structural, hits, Vec::new()))
     }
 
+    fn semantic(&self, request: &SearchRequest) -> Result<SearchResponse> {
+        require_non_empty(&request.query)?;
+        let query_vec = hash_embed(&request.query);
+        let nodes = load_nodes(self.store, &request.kinds)?;
+        let mut hits = Vec::new();
+        for node in nodes {
+            let body = node.search_body();
+            let score = cosine(&query_vec, &hash_embed(&body));
+            if score < 0.12 {
+                continue;
+            }
+            hits.push(hit(
+                node,
+                score,
+                SearchMode::Semantic,
+                "hashed n-gram cosine against node search body (local embedder; not a remote model)",
+            ));
+        }
+        hits.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+        Ok(response(SearchMode::Semantic, hits, Vec::new()))
+    }
+
     fn graph(&self, request: &SearchRequest, intent: &crate::QueryIntent) -> Result<SearchResponse> {
         let (from, to) = match (request.from, request.to) {
             (Some(from), Some(to)) => (self.store.get_node(from)?, self.store.get_node(to)?),
@@ -263,6 +287,10 @@ impl<'a> SearchEngine<'a> {
         match self.full_text(request) {
             Ok(mut resp) => combined.append(&mut resp.hits),
             Err(err) => notes.push(format!("full_text: {err}")),
+        }
+        match self.semantic(request) {
+            Ok(mut resp) => combined.append(&mut resp.hits),
+            Err(err) => notes.push(format!("semantic: {err}")),
         }
         if parse_structural_prefix(&request.query).is_some() {
             match self.structural(request, intent) {

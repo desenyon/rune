@@ -55,6 +55,11 @@ rune specs
 rune handoff compile --from claude --to codex "continue the task"
 rune context compile "fix the race"
 rune agents
+rune eval
+rune impact --file lib.rs
+rune package
+rune crash
+rune update
 rune doctor
 rune onboard
 rune export --format json

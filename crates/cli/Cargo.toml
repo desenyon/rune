@@ -17,6 +17,7 @@ rune-compression.workspace = true
 rune-context-compiler.workspace = true
 rune-core.workspace = true
 rune-docs-context.workspace = true
+rune-evals.workspace = true
 rune-git-intelligence.workspace = true
 rune-graph.workspace = true
 rune-handoff.workspace = true

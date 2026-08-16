@@ -1,0 +1,12 @@
+{
+  "name": "memory_s065",
+  "passed": true,
+  "metrics": {
+    "conflict_preserved": 1.0,
+    "inference_rejected_as_guidance": 1.0,
+    "staleness_detected": 1.0
+  },
+  "details": {
+    "spec": "S065"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "compiler_s063",
+  "passed": true,
+  "metrics": {
+    "contradiction_rate": 0.3333333333333333,
+    "duplicate_rate": 1.0,
+    "evidence_recall": 1.0,
+    "irrelevant_context_rate": 0.0,
+    "latency_ms": 1.246417,
+    "stale_context_rate": 0.3333333333333333,
+    "token_cost": 100.0
+  },
+  "details": {
+    "expected": [
+      "nod_01a00812-6f6b-7840-8356-388fef739053",
+      "nod_01a00812-6f6b-7840-8356-38945d7657d6"
+    ],
+    "found": [
+      "nod_01a00812-6f6b-7840-8356-388fef739053",
+      "nod_01a00812-6f6b-7840-8356-38945d7657d6",
+      "nod_01a00812-6f6b-7840-8356-38ba39af2ab9"
+    ],
+    "spec": "S063"
+  }
+}

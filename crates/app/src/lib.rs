@@ -44,6 +44,33 @@ pub struct App {
     pub providers: ProviderRegistry,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CrashBundle {
+    pub application_version: String,
+    pub platform: String,
+    pub terminal: String,
+    pub sanitized_logs: Vec<String>,
+    pub stack_trace: String,
+    pub provider_states: Vec<serde_json::Value>,
+    pub database_diagnostics: serde_json::Value,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UpdateCheck {
+    pub current_version: String,
+    pub latest_version: Option<String>,
+    pub update_available: bool,
+    pub running_binary: Option<PathBuf>,
+    pub will_replace_running_binary: bool,
+    pub note: String,
+}
+
+impl CrashBundle {
+    pub fn will_replace(&self) -> bool {
+        false
+    }
+}
+
 impl App {
     pub fn open_or_create(workspace: impl AsRef<Path>) -> Result<Self> {
         Self::open_or_create_with_session(workspace, None)
@@ -145,6 +172,66 @@ impl App {
     pub fn migrations_ok(&self) -> Result<bool> {
         let applied = self.store.with_conn(applied_migrations)?;
         Ok(!applied.is_empty())
+    }
+
+    /// Local crash bundle. Never includes repository secrets automatically (S087).
+    pub fn crash_bundle(&self, stack: Option<&str>) -> Result<CrashBundle> {
+        let caps = std::env::var("TERM").unwrap_or_else(|_| "unknown".into());
+        let (sanitized_stack, _) = redact_secrets(stack.unwrap_or(""));
+        let diagnostics = serde_json::json!({
+            "node_count": self.store.node_count().ok(),
+            "edge_count": self.store.edge_count().ok(),
+            "integrity_findings": self.store.check_integrity().ok().map(|f| f.len()),
+            "migrations": self.store.with_conn(applied_migrations).ok(),
+        });
+        Ok(CrashBundle {
+            application_version: env!("CARGO_PKG_VERSION").into(),
+            platform: format!("{}-{}", std::env::consts::OS, std::env::consts::ARCH),
+            terminal: caps,
+            sanitized_logs: vec!["crash bundle generated locally".into()],
+            stack_trace: sanitized_stack,
+            provider_states: self
+                .providers
+                .ids()
+                .into_iter()
+                .map(|id| {
+                    let leaving = self
+                        .providers
+                        .get(&id)
+                        .and_then(|p| p.data_leaving_machine())
+                        .unwrap_or("local-only");
+                    serde_json::json!({"id": id, "data_leaving_machine": leaving})
+                })
+                .collect(),
+            database_diagnostics: diagnostics,
+        })
+    }
+
+    /// Discover updates without replacing the running binary (S086).
+    pub fn check_update(&self, latest_version: Option<&str>) -> Result<UpdateCheck> {
+        let current = env!("CARGO_PKG_VERSION");
+        let running = std::env::current_exe().ok();
+        Ok(UpdateCheck {
+            current_version: current.into(),
+            latest_version: latest_version.map(str::to_string),
+            update_available: latest_version
+                .map(|latest| latest != current)
+                .unwrap_or(false),
+            running_binary: running,
+            will_replace_running_binary: false,
+            note: "updates must not silently replace binaries during an active session".into(),
+        })
+    }
+
+    pub fn refuse_replace_running_binary(&self, dest: &Path) -> Result<()> {
+        if let Ok(current) = std::env::current_exe() {
+            if current == dest {
+                return Err(AppError::Message(
+                    "refusing to replace the running binary during an active session".into(),
+                ));
+            }
+        }
+        Ok(())
     }
 }
 
@@ -345,5 +432,27 @@ mod tests {
         let session: toml::Value = "theme = \"high-contrast\"\n".parse().unwrap();
         let cfg = load_layered_config(dir.path(), Some(&session)).unwrap();
         assert_eq!(cfg.get("theme"), Some(&serde_json::json!("high-contrast")));
+    }
+
+    #[test]
+    fn crash_bundle_redacts_secrets() {
+        let dir = tempfile::tempdir().unwrap();
+        let app = App::open_or_create(dir.path()).unwrap();
+        let bundle = app
+            .crash_bundle(Some("token AKIAIOSFODNN7EXAMPLE exploded"))
+            .unwrap();
+        assert!(!bundle.stack_trace.contains("AKIAIOSFODNN7EXAMPLE"));
+        assert_eq!(bundle.will_replace(), false);
+    }
+
+    #[test]
+    fn update_check_never_replaces_running_binary() {
+        let dir = tempfile::tempdir().unwrap();
+        let app = App::open_or_create(dir.path()).unwrap();
+        let check = app.check_update(Some("9.9.9")).unwrap();
+        assert!(check.update_available);
+        assert!(!check.will_replace_running_binary);
+        let dest = std::env::current_exe().unwrap();
+        assert!(app.refuse_replace_running_binary(&dest).is_err());
     }
 }

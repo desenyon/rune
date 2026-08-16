@@ -154,3 +154,54 @@ Product name is Rune. CLI and crate prefixes use `rune`.
 - affected components: core, git intelligence, search, history
 - migration implications: nodes previously stored as kind `author` via Unknown already serialize as the string `author` and load as `Author`
 
+---
+
+## DEC-010 Hashed n-gram embeddings for default semantic search
+
+- decision identifier: DEC-010
+- date: 2026-08-15
+- problem: S006 requires a semantic search mode and S059 forbids binding the architecture to one embedding model. A neural model is not bundled.
+- options considered:
+  - Leave semantic mode unimplemented until a remote/local model is configured
+  - Ship a bundled ONNX/GGUF embedder
+  - Provide an honest local hashed character n-gram embedder as the default LocalEmbed path
+- decision: Default semantic search uses a 256-dimension hashed 3-gram + token embedder in `rune-search`. `rune-semantic` LocalEmbed without a process backend uses the same hashing. Disabled still errors on embed. Neural/remote providers remain pluggable and must not mix vectors across models.
+- reason: Structural features must work offline (DEC-005). Semantic mode must exist without pretending a neural model is present. Hashing is inspectable and deterministic.
+- tradeoffs: Ranking quality is lexical-ish, not neural. Queries such as "why" can still route to semantic mode and rank related tokens.
+- affected components: search, semantic, CLI `--mode semantic`, context compiler retrieval
+- migration implications: stored neural embeddings must be provider-scoped; hashed vectors are not interchangeable with model vectors
+
+---
+
+## DEC-011 Context7 HTTPS via ureq
+
+- decision identifier: DEC-011
+- date: 2026-08-15
+- problem: The Context7 default endpoint is HTTPS. A raw TCP HTTP/1.0 client cannot speak TLS, so live fetches failed unless an http:// URL was configured.
+- options considered:
+  - Keep HTTP-only TCP and document HTTPS as unsupported
+  - Add rustls plus a hand-rolled TLS client
+  - Use ureq 2.x with rustls for HTTPS and keep TCP for http://
+- decision: HTTPS uses ureq with rustls. HTTP keeps the existing TCP client. Network policy still gates fetches. The provider declares `data_leaving_machine` (S088).
+- reason: S030 requires current external documentation retrieval. Silent HTTP-only behavior against an HTTPS URL is a hidden fallback.
+- tradeoffs: New TLS crates in Cargo.lock. Live Context7 is still not certified in CI.
+- affected components: docs_context, providers, packaging size
+- migration implications: none for stored docs; cached HTTP responses remain valid
+
+---
+
+## DEC-012 Cross-file call edges by unique name
+
+- decision identifier: DEC-012
+- date: 2026-08-15
+- problem: Call edges were resolved only inside a file. Cross-file `greet()` in `b.rs` did not link to `greet` in `a.rs`.
+- options considered:
+  - Full import-graph and type-aware resolution
+  - Leave calls intra-file until a language server is embedded
+  - Resolve pending calls after each scan: unique other-file name, else import-path unique match
+- decision: Indexer stores unresolved `pending_calls` on the file record, then `resolve_cross_file_calls` after scan/`index_path`. Unique callee names across other files become `Calls` + `References`. Ambiguous names resolve only when an import path uniquely matches. Remaining pendings stay on the record.
+- reason: S003 requires call relationships when derivable. Name uniqueness is derivable without a type checker. Ambiguous matches must not invent edges.
+- tradeoffs: False negatives for overloaded names; possible false positives if two files export the same unique name and the caller meant a different unindexed target.
+- affected components: index persist, indexer, graph, search structural mode, S080 lifecycle
+- migration implications: file records gain `pending_calls` with `#[serde(default)]` so older records load empty
+

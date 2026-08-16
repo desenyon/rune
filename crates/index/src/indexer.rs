@@ -1,9 +1,10 @@
 use crate::discovery::{self, WorkspaceDiscovery};
+use crate::documents;
 use crate::error::{IndexError, Result};
-use crate::languages::{file_key, language_from_path, relative_posix};
+use crate::languages::{file_key, language_from_path, relative_posix, SourceLanguage};
 use crate::persist::{
     delete_file_record, ensure_edge, load_file_record, load_repo_id, parse_node_id, save_file_record,
-    save_repo_id, upsert_named, FileRecord,
+    save_repo_id, upsert_named, FileRecord, PendingCall,
 };
 use crate::process::{self, ProcessInfo};
 use crate::structural::{self, ParsedFile};
@@ -110,6 +111,7 @@ impl Indexer {
                 }
             }
         }
+        self.resolve_cross_file_calls()?;
         let processes = self.refresh_processes(repository_id)?;
         Ok(WorkspaceScanReport {
             repository_id,
@@ -157,6 +159,7 @@ impl Indexer {
             language: language_from_path(path).map(|l| l.as_str().to_string()),
         };
         self.index_discovered_file(repo_id, &file)?;
+        self.resolve_cross_file_calls()?;
         Ok(())
     }
 
@@ -282,6 +285,7 @@ impl Indexer {
 
         let mut symbol_ids = Vec::new();
         let mut import_ids = Vec::new();
+        let mut pending_calls = Vec::new();
         if let Some(lang) = language.filter(|l| l.is_indexable()) {
             match std::fs::read_to_string(&file.path) {
                 Ok(source) => match structural::parse_source(lang, &file.path, &source) {
@@ -289,10 +293,26 @@ impl Indexer {
                         let ids = self.persist_parsed(&file_node, &file.relative, &key, parsed)?;
                         symbol_ids = ids.0;
                         import_ids = ids.1;
+                        pending_calls = ids.2;
                     }
                     Err(err) => tracing::warn!(error = %err, path = %file.relative, "structural parse failed"),
                 },
                 Err(err) => tracing::warn!(error = %err, path = %file.relative, "unable to read source"),
+            }
+        } else if let Some(lang) = language.filter(|l| {
+            matches!(
+                l,
+                SourceLanguage::Markdown
+                    | SourceLanguage::Json
+                    | SourceLanguage::Toml
+                    | SourceLanguage::Yaml
+            )
+        }) {
+            match std::fs::read_to_string(&file.path) {
+                Ok(source) => {
+                    symbol_ids = self.persist_document(&file_node, &file.relative, &source, lang)?;
+                }
+                Err(err) => tracing::warn!(error = %err, path = %file.relative, "unable to read document"),
             }
         }
         save_file_record(
@@ -304,6 +324,7 @@ impl Indexer {
                 path: file.relative.clone(),
                 symbol_ids: symbol_ids.iter().map(|id| id.to_string()).collect(),
                 import_ids: import_ids.iter().map(|id| id.to_string()).collect(),
+                pending_calls,
             },
         )?;
         Ok(FileIndexOutcome::Indexed(IndexedChange {
@@ -319,7 +340,7 @@ impl Indexer {
         relative: &str,
         key: &str,
         parsed: ParsedFile,
-    ) -> Result<(Vec<NodeId>, Vec<NodeId>)> {
+    ) -> Result<(Vec<NodeId>, Vec<NodeId>, Vec<PendingCall>)> {
         let mut symbol_ids = Vec::new();
         let mut import_ids = Vec::new();
         let mut by_name: HashMap<String, NodeId> = HashMap::new();
@@ -366,18 +387,164 @@ impl Indexer {
             ensure_edge(&self.store, file_node.id, module.id, EdgeKind::Imports)?;
             import_ids.push(module.id);
         }
+        let mut pending_calls = Vec::new();
         for call in parsed.calls {
-            let Some(callee_id) = by_name.get(&call.callee).copied() else {
-                continue;
-            };
             let from = call
                 .caller
                 .as_ref()
                 .and_then(|name| by_name.get(name).copied())
                 .unwrap_or(file_node.id);
-            ensure_edge(&self.store, from, callee_id, EdgeKind::Calls)?;
+            if let Some(callee_id) = by_name.get(&call.callee).copied() {
+                ensure_edge(&self.store, from, callee_id, EdgeKind::Calls)?;
+            } else {
+                pending_calls.push(PendingCall {
+                    callee: call.callee,
+                    caller_id: from.to_string(),
+                });
+            }
         }
-        Ok((symbol_ids, import_ids))
+        Ok((symbol_ids, import_ids, pending_calls))
+    }
+
+    fn persist_document(
+        &self,
+        file_node: &Node,
+        relative: &str,
+        source: &str,
+        language: SourceLanguage,
+    ) -> Result<Vec<NodeId>> {
+        let parsed = documents::parse_document(relative, source, language.as_str());
+        let doc = Node::new(
+            NodeKind::Document,
+            Some(parsed.title.clone()),
+            serde_json::json!({
+                "path": relative,
+                "kind": parsed.kind,
+                "section_count": parsed.sections.len(),
+            }),
+        );
+        self.store.upsert_node(&doc)?;
+        ensure_edge(&self.store, file_node.id, doc.id, EdgeKind::Documents)?;
+        let mut ids = vec![doc.id];
+        for section in parsed.sections {
+            let node = Node::new(
+                NodeKind::DocumentationSection,
+                Some(section.heading.clone()),
+                serde_json::json!({
+                    "path": relative,
+                    "heading": section.heading,
+                    "content": section.content,
+                    "start_line": section.start_line,
+                }),
+            );
+            self.store.upsert_node(&node)?;
+            ensure_edge(&self.store, doc.id, node.id, EdgeKind::Contains)?;
+            ids.push(node.id);
+        }
+        Ok(ids)
+    }
+
+    fn resolve_cross_file_calls(&self) -> Result<()> {
+        let mut by_name: HashMap<String, Vec<(NodeId, String)>> = HashMap::new();
+        for kind in [
+            NodeKind::Function,
+            NodeKind::Method,
+            NodeKind::Class,
+            NodeKind::Trait,
+            NodeKind::Test,
+            NodeKind::Type,
+        ] {
+            for node in self.store.nodes_of_kind(kind)? {
+                let Some(name) = node.name.clone() else {
+                    continue;
+                };
+                let path = node
+                    .payload
+                    .get("path")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                by_name.entry(name).or_default().push((node.id, path));
+            }
+        }
+        let keys = self.store.settings().list_scope("index")?;
+        for (key, _) in keys {
+            let Some(file_key) = key.strip_prefix("file:") else {
+                continue;
+            };
+            let Some(record) = load_file_record(&self.store, file_key)? else {
+                continue;
+            };
+            if record.pending_calls.is_empty() {
+                continue;
+            }
+            let import_names: Vec<String> = record
+                .import_ids
+                .iter()
+                .filter_map(|id| parse_node_id(id).ok())
+                .filter_map(|id| self.store.get_node(id).ok())
+                .filter_map(|node| node.name)
+                .collect();
+            let mut remaining = Vec::new();
+            let pending_calls = record.pending_calls.clone();
+            for pending in pending_calls {
+                let Some(candidates) = by_name.get(&pending.callee) else {
+                    remaining.push(pending);
+                    continue;
+                };
+                let caller_id = match parse_node_id(&pending.caller_id) {
+                    Ok(id) => id,
+                    Err(_) => {
+                        remaining.push(pending);
+                        continue;
+                    }
+                };
+                let other: Vec<NodeId> = candidates
+                    .iter()
+                    .filter(|(id, _)| *id != caller_id)
+                    .map(|(id, _)| *id)
+                    .collect();
+                let chosen = if other.len() == 1 {
+                    other.first().copied()
+                } else if other.len() > 1 {
+                    let imported: Vec<NodeId> = candidates
+                        .iter()
+                        .filter(|(id, path)| {
+                            *id != caller_id
+                                && import_names.iter().any(|imp| {
+                                    path.contains(imp)
+                                        || imp.contains(
+                                            path.rsplit('/')
+                                                .next()
+                                                .unwrap_or(path)
+                                                .trim_end_matches(".rs")
+                                                .trim_end_matches(".py")
+                                                .trim_end_matches(".go"),
+                                        )
+                                })
+                        })
+                        .map(|(id, _)| *id)
+                        .collect();
+                    if imported.len() == 1 {
+                        imported.first().copied()
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+                if let Some(callee_id) = chosen {
+                    ensure_edge(&self.store, caller_id, callee_id, EdgeKind::Calls)?;
+                    ensure_edge(&self.store, caller_id, callee_id, EdgeKind::References)?;
+                } else {
+                    remaining.push(pending);
+                }
+            }
+            let mut updated = record;
+            updated.pending_calls = remaining;
+            save_file_record(&self.store, file_key, &updated)?;
+        }
+        Ok(())
     }
 
     fn refresh_processes(&self, repository_id: NodeId) -> Result<Vec<Node>> {

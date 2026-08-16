@@ -10,10 +10,10 @@ Last updated: 2026-08-15.
 
 | Platform | Status | Notes |
 | --- | --- | --- |
-| macOS arm64 | planned | Specified packaging target (S085). Development occurs here first. |
-| macOS x86_64 | planned | Specified where practical. |
-| Linux x86_64 | planned | Specified packaging target. |
-| Linux arm64 | planned | Specified packaging target. |
+| macOS arm64 | planned | Packaging script and CI matrix exist (`scripts/package.sh`, `.github/workflows/release.yml`). No dated certification run. |
+| macOS x86_64 | planned | Same packaging matrix. No dated certification run. |
+| Linux x86_64 | planned | Same packaging matrix. No dated certification run. |
+| Linux arm64 | planned | Same packaging matrix. No dated certification run. |
 | Windows | planned | Specified where support is reliable. Agent runtime and watchers need extra work (`notify` uses macOS kqueue in workspace deps today). |
 
 ## Terminals

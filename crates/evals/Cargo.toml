@@ -10,8 +10,15 @@ description = "Reproducible evaluations for retrieval, memory freshness, handoff
 [dependencies]
 rune-context-compiler.workspace = true
 rune-core.workspace = true
+rune-graph.workspace = true
 rune-handoff.workspace = true
+rune-index.workspace = true
+rune-memory.workspace = true
+rune-search.workspace = true
+rune-specs.workspace = true
 rune-storage.workspace = true
+rune-tasks.workspace = true
+rune-worktrees.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

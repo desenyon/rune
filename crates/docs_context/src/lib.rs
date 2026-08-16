@@ -177,6 +177,10 @@ impl Provider for Context7Provider {
         BTreeSet::from([Permission::Network])
     }
 
+    fn data_leaving_machine(&self) -> Option<&'static str> {
+        Some("library name, version, and query text are sent to the configured documentation endpoint")
+    }
+
     async fn invoke(
         &self,
         request: ProviderRequest,
@@ -262,9 +266,48 @@ fn encode(value: &str) -> String {
     out
 }
 
+fn parse_url(url: &str) -> std::result::Result<ParsedUrl, String> {
+    let (https, rest) = if let Some(rest) = url.strip_prefix("https://") {
+        (true, rest)
+    } else if let Some(rest) = url.strip_prefix("http://") {
+        (false, rest)
+    } else {
+        return Err("endpoint must be http:// or https://".into());
+    };
+    let (hostport, path) = rest.split_once('/').unwrap_or((rest, "/"));
+    let (host, port) = if let Some((h, p)) = hostport.split_once(':') {
+        (h.to_string(), p.parse().unwrap_or(if https { 443 } else { 80 }))
+    } else {
+        (hostport.to_string(), if https { 443 } else { 80 })
+    };
+    Ok(ParsedUrl {
+        https,
+        host,
+        port,
+        path: format!("/{path}"),
+    })
+}
+
 fn fetch_text(url: &str) -> std::result::Result<String, String> {
-    // Minimal HTTP GET without extra crates. Policy already allowed network.
-    let parsed = parse_http_url(url)?;
+    let parsed = parse_url(url)?;
+    if parsed.https {
+        https_get(url)
+    } else {
+        http_get(&parsed)
+    }
+}
+
+fn https_get(url: &str) -> std::result::Result<String, String> {
+    let response = ureq::get(url)
+        .timeout(std::time::Duration::from_secs(10))
+        .set("User-Agent", "rune-docs-context")
+        .set("Accept", "text/plain, application/json")
+        .call()
+        .map_err(|err| err.to_string())?;
+    response.into_string().map_err(|err| err.to_string())
+}
+
+fn http_get(parsed: &ParsedUrl) -> std::result::Result<String, String> {
     let mut stream = std::net::TcpStream::connect(format!("{}:{}", parsed.host, parsed.port))
         .map_err(|err| err.to_string())?;
     stream
@@ -296,26 +339,10 @@ fn fetch_text(url: &str) -> std::result::Result<String, String> {
 }
 
 struct ParsedUrl {
+    https: bool,
     host: String,
     port: u16,
     path: String,
-}
-
-fn parse_http_url(url: &str) -> std::result::Result<ParsedUrl, String> {
-    let rest = url
-        .strip_prefix("http://")
-        .ok_or_else(|| "only http:// endpoints are used without TLS extras; configure an http cache or expect Unavailable over https".to_string())?;
-    let (hostport, path) = rest.split_once('/').unwrap_or((rest, "/"));
-    let (host, port) = if let Some((h, p)) = hostport.split_once(':') {
-        (h.to_string(), p.parse().unwrap_or(80))
-    } else {
-        (hostport.to_string(), 80)
-    };
-    Ok(ParsedUrl {
-        host,
-        port,
-        path: format!("/{path}"),
-    })
 }
 
 #[cfg(test)]
@@ -369,5 +396,21 @@ mod tests {
             err,
             ProviderError::Permission(Permission::Network)
         ));
+    }
+
+    #[test]
+    fn https_urls_parse_to_port_443() {
+        let parsed = parse_url("https://context7.com/api/docs?library=tokio").unwrap();
+        assert!(parsed.https);
+        assert_eq!(parsed.host, "context7.com");
+        assert_eq!(parsed.port, 443);
+        assert!(parsed.path.starts_with("/api/docs"));
+    }
+
+    #[test]
+    fn http_urls_still_parse() {
+        let parsed = parse_url("http://127.0.0.1:9/docs").unwrap();
+        assert!(!parsed.https);
+        assert_eq!(parsed.port, 9);
     }
 }

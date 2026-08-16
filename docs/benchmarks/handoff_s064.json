@@ -1,0 +1,13 @@
+{
+  "name": "handoff_s064",
+  "passed": true,
+  "metrics": {
+    "missing_fields": 0.0,
+    "structured_complete": 1.0,
+    "transcript_has_goal": 1.0
+  },
+  "details": {
+    "mode": "balanced",
+    "spec": "S064"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "memory_staleness",
+  "passed": true,
+  "metrics": {
+    "stale_detected": 1.0
+  },
+  "details": {
+    "memory": "nod_01a00812-6f69-7043-aa7d-364c879e039e"
+  }
+}

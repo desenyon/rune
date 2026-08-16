@@ -5,7 +5,7 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 authors.workspace = true
-description = "Universal search across the Rune canonical graph: exact, fuzzy, FTS, structural, graph, temporal, and hybrid."
+description = "Universal search across the Rune canonical graph: exact, fuzzy, FTS, structural, semantic, graph, temporal, and hybrid."
 
 [dependencies]
 nucleo.workspace = true

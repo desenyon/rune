@@ -6,8 +6,9 @@ See LICENSE.
 
 Third-party Rust crates are used under their respective licenses
 (MIT, Apache-2.0, BSD, Unicode). Crate versions are recorded in Cargo.lock.
-No third-party source was copied into this repository without a recorded
-license review in docs/DECISIONS.md or docs/integrations/.
+HTTPS documentation fetches use ureq with rustls. No third-party source was
+copied into this repository without a recorded license review in
+docs/DECISIONS.md or docs/integrations/.
 
 Conceptual inspiration (clean-room, no source copied):
 Graft, Codebase Memory, Serena, Probe, Graphify, Rekal, CASS, Catchup,

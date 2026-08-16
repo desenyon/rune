@@ -12,20 +12,11 @@ Every required specification has exactly one state: `planned`, `active`, `blocke
 | --- | --- | --- | --- | --- |
 | S001 | Workspace discovery | verification | rune-index | S056, S057, S052 |
 | S002 | Terminal capability engine | verification | rune-terminal | none |
-| S006 | Search engine | verification | rune-search | S003, S005, S008, S011, S056 |
-| S007 | Symbol intelligence | active | rune-graph | S003, S008, S016, S015, S009, S011 |
-| S033 | OSS provider framework | verification | rune-providers | S054 |
-| S053 | Environment awareness | verification | rune-security | S054 |
-| S054 | Security model | verification | rune-security | none |
-| S056 | Storage | verification | rune-storage | none |
-| S057 | Database migrations | verification | rune-storage | S056 |
-| S058 | Content addressed cache | verification | rune-storage | S056 |
-| S061 | Observability | verification | rune-telemetry | none |
-| S070 | Configuration | active | rune-core | none |
-| S084 | Licensing review | verification | root coordinator | none |
-| S100 | Graph integrity | verification | rune-storage | S056 |
 | S003 | Structural code index | verification | rune-index | S001, S056, S058 |
 | S004 | Semantic repository graph | verification | rune-semantic | S003, S059 |
+| S005 | Multimodal knowledge graph | verification | rune-index | S003, S056 |
+| S006 | Search engine | verification | rune-search | S003, S005, S008, S011, S056 |
+| S007 | Symbol intelligence | verification | rune-graph | S003, S008, S016, S015, S009, S011 |
 | S008 | Git temporal intelligence | verification | rune-git-intelligence | S001, S056 |
 | S009 | Agent session ingestion | verification | rune-sessions | S056, S033 |
 | S010 | Session intelligence | verification | rune-sessions | S009 |
@@ -51,7 +42,7 @@ Every required specification has exactly one state: `planned`, `active`, `blocke
 | S030 | External documentation context | verification | rune-docs-context | S033, S056 |
 | S031 | Documentation freshness | verification | rune-docs-context | S030, S001 |
 | S032 | Portable context packs | active | rune-context-compiler | S024, S054, S076 |
-| S033 | OSS provider framework | planned | unassigned | S054 |
+| S033 | OSS provider framework | verification | rune-providers | S054 |
 | S034 | Required OSS research targets | verification | docs/integrations | none |
 | S035 | Command line tool adapters | verification | rune-tools | S033 |
 | S036 | MCP interoperability | verification | rune-mcp | S033, S054 |
@@ -63,32 +54,32 @@ Every required specification has exactly one state: `planned`, `active`, `blocke
 | S042 | Adaptive rendering | active | rune-ui | S002, S040 |
 | S043 | Graph explorer | active | rune-ui | S039, S100 |
 | S044 | Context inspector | active | rune-ui | S024, S092, S039 |
-| S045 | Memory timeline | active | rune-ui | S011, S013, S039 |
+| S045 | Memory timeline | verification | rune-memory | S011, S013, S039 |
 | S046 | Session explorer | active | rune-ui | S009, S010, S039 |
 | S047 | Agent cockpit | active | rune-ui | S019, S020, S039 |
 | S048 | Task graph view | active | rune-ui | S016, S039 |
 | S049 | Specification coverage view | active | rune-ui | S015, S003, S051, S039 |
-| S050 | Diff intelligence | planned | unassigned | S003, S008, S013, S016, S015 |
+| S050 | Diff intelligence | verification | rune-index | S003, S008, S013, S016, S015 |
 | S051 | Test intelligence | active | rune-index | S003 |
 | S052 | Process awareness | verification | rune-index | S001 |
-| S053 | Environment awareness | planned | unassigned | S054 |
-| S054 | Security model | planned | unassigned | none |
+| S053 | Environment awareness | verification | rune-security | S054 |
+| S054 | Security model | verification | rune-security | none |
 | S055 | Prompt injection resistance | verification | rune-security | S054, S024, S011, S036 |
-| S056 | Storage | planned | unassigned | none |
-| S057 | Database migrations | planned | unassigned | S056 |
-| S058 | Content addressed cache | planned | unassigned | S056 |
+| S056 | Storage | verification | rune-storage | none |
+| S057 | Database migrations | verification | rune-storage | S056 |
+| S058 | Content addressed cache | verification | rune-storage | S056 |
 | S059 | Semantic provider abstraction | verification | rune-semantic | S033 |
 | S060 | Offline operation | planned | unassigned | S003, S008, S011, S016, S056 |
-| S061 | Observability | planned | unassigned | none |
+| S061 | Observability | verification | rune-telemetry | none |
 | S062 | Evaluation framework | verification | rune-evals | S056 |
-| S063 | Context compiler evaluation | planned | unassigned | S062, S024 |
-| S064 | Handoff evaluation | planned | unassigned | S062, S022 |
-| S065 | Memory evaluation | planned | unassigned | S062, S012, S013 |
+| S063 | Context compiler evaluation | verification | rune-evals | S062, S024 |
+| S064 | Handoff evaluation | verification | rune-evals | S062, S022 |
+| S065 | Memory evaluation | verification | rune-evals | S062, S012, S013 |
 | S066 | Performance suite | active | tests/performance | S079 |
 | S067 | Responsiveness targets | planned | unassigned | S066, S042, S038 |
 | S068 | Failure recovery | planned | unassigned | S056, S057, S019 |
 | S069 | Compatibility matrix | verification | docs/compatibility | S002, S009 |
-| S070 | Configuration | planned | unassigned | none |
+| S070 | Configuration | active | rune-core | none |
 | S071 | Themes | verification | rune-ui | S039, S070 |
 | S072 | Keybinding system | verification | rune-ui | S070 |
 | S073 | Accessibility | verification | rune-ui | S039, S040 |
@@ -97,16 +88,16 @@ Every required specification has exactly one state: `planned`, `active`, `blocke
 | S076 | Export | verification | rune-app | S032, S054 |
 | S077 | CLI surface | verification | rune-cli | S001, S006, S078 |
 | S078 | Doctor command | verification | rune-cli | S056, S002, S033, S009 |
-| S079 | Integration test repositories | verification | tests/fixtures | none |
-| S080 | Cross subsystem integration tests | planned | unassigned | S012, S013, S016, S019, S021, S024, S049 |
-| S081 | Regression discipline | planned | unassigned | S079 |
+| S079 | Integration test repositories | verification | tests/fixtures/repositories | none |
+| S080 | Cross subsystem integration tests | verification | rune-evals | S012, S013, S016, S019, S021, S024, S049 |
+| S081 | Regression discipline | verification | tests | S079 |
 | S082 | Documentation | active | docs/architecture | none |
 | S083 | Architecture diagrams | verification | docs/architecture | S082 |
 | S084 | Licensing review | verification | root coordinator | none |
-| S085 | Packaging | active | apps/rune | S077 |
-| S086 | Updates | planned | unassigned | S057, S085 |
-| S087 | Crash reporting | planned | unassigned | S061, S054 |
-| S088 | Data ownership | planned | unassigned | S054 |
+| S085 | Packaging | verification | apps/rune | S077 |
+| S086 | Updates | verification | rune-app | S057, S085 |
+| S087 | Crash reporting | verification | rune-app | S061, S054 |
+| S088 | Data ownership | verification | rune-providers | S054 |
 | S089 | Deterministic state inspection | verification | rune-context-compiler | S024, S013, S016, S006, S017 |
 | S090 | Context difference engine | verification | rune-context-compiler | S024 |
 | S091 | Agent knowledge comparison | verification | rune-context-compiler | S009, S024 |
@@ -118,9 +109,9 @@ Every required specification has exactly one state: `planned`, `active`, `blocke
 | S097 | Entity resolution | verification | rune-memory | S003, S005, S011 |
 | S098 | Background indexing | verification | rune-index | S003, S099 |
 | S099 | File watching | verification | rune-index | S001, S003 |
-| S100 | Graph integrity | planned | unassigned | S056 |
+| S100 | Graph integrity | verification | rune-storage | S056 |
 
-Highest-leverage unblocked work: wire remaining TUI snapshot views into the live event loop; S080 cross-subsystem lifecycle; S063–S065 evals against real stores; S085 multi-arch packaging; S006 semantic mode.
+Highest-leverage unblocked work: S023 branchable context merge UX; S032 portable packs; S041 shared-element motion; S066/S067 measured performance on large fixtures; remaining TUI inspector depth. Semantic search, Context7 HTTPS, S080 lifecycle, S063–S065 evals, cross-file calls, multimodal documents, diff impact, and multi-arch packaging scripts are in verification.
 
 ## Protocol notes
 
@@ -150,16 +141,16 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S002 Terminal capability engine
 
 - specification: S002
-- owner: unassigned
+- owner: rune-terminal
 - dependencies: none
-- current status: planned
-- implemented components: none
-- remaining components: capability detection, renderer levels, graceful degradation
-- tests: none
+- current status: verification
+- implemented components: capability detection (true color, unicode, mouse, hyperlinks, synchronized output, Kitty/Sixel/iTerm graphics, cells/pixels), renderer levels Basic through Graphics, graceful degradation
+- remaining components: dated per-terminal certification runs (S069)
+- tests: rune-terminal unit tests for env-based probes
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S003 Structural code index
 
@@ -167,10 +158,10 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - owner: rune-index
 - dependencies: S001, S056, S058
 - current status: verification
-- implemented components: Tree-sitter (and fallback) symbol parse, stable file_key, incremental skip, persist to graph
-- remaining components: cross-file call/reference resolution; symbol-level git blame
-- tests: rust_function_symbols_indexed, rust_function_and_test_are_indexed, file_key_is_stable_across_content_hash_changes
-- known failures: none recorded
+- implemented components: Tree-sitter (and fallback) symbol parse, stable file_key, incremental skip, persist to graph, intra-file and cross-file `Calls`/`References` via unique name plus import-path disambiguation
+- remaining components: full import-graph resolution for ambiguous names; symbol-level git blame
+- tests: rust_function_symbols_indexed, rust_function_and_test_are_indexed, file_key_is_stable_across_content_hash_changes, cross_file_calls_are_resolved
+- known failures: ambiguous same-name callees without a unique import match stay pending
 - benchmark status: not_run
 - documentation status: partial
 - integration status: partial
@@ -192,16 +183,16 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S005 Multimodal knowledge graph
 
 - specification: S005
-- owner: unassigned
+- owner: rune-index
 - dependencies: S003, S056
-- current status: planned
-- implemented components: none
-- remaining components: markdown/text/ADR/spec/PDF/schema/config/image/generated-docs/issue/PR indexing with structure preserved
-- tests: none
+- current status: verification
+- implemented components: markdown headings, toml tables, json/yaml keys indexed as Document + DocumentationSection with Documents/Contains edges; structure preserved rather than flattened chunks
+- remaining components: PDF, image metadata, issue/PR content, generated docs, database schemas
+- tests: markdown_is_indexed_as_document_sections
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S006 Search engine
 
@@ -209,9 +200,9 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - owner: rune-search
 - dependencies: S003, S005, S008, S011, S056
 - current status: verification
-- implemented components: exact, fuzzy (Nucleo), FTS5, structural, graph, temporal, hybrid; intent router; forced `--mode`; CLI `rune search`; TUI palette hits
-- remaining components: pluggable semantic search (S059); p95 latency measurement (S067)
-- tests: search_router_picks_graph_for_path_queries, router_picks_structural_for_fn_prefix, forced_mode_overrides_router, exact_and_fuzzy_find_function, graph_search_returns_path_nodes, search_finds_indexed_function
+- implemented components: exact, fuzzy (Nucleo), FTS5, structural, graph, temporal, hybrid, semantic (hashed 3-gram embedder); intent router including why/similar/meaning; forced `--mode`; CLI `rune search`
+- remaining components: neural/remote embeddings via S059 ProcessBackend; p95 latency measurement (S067)
+- tests: search_router_picks_graph_for_path_queries, router_picks_structural_for_fn_prefix, forced_mode_overrides_router, exact_and_fuzzy_find_function, graph_search_returns_path_nodes, search_finds_indexed_function, semantic mode routing tests
 - known failures: none recorded
 - benchmark status: not_run
 - documentation status: partial
@@ -220,16 +211,16 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S007 Symbol intelligence
 
 - specification: S007
-- owner: unassigned
+- owner: rune-graph
 - dependencies: S003, S008, S016, S015, S009, S011
-- current status: planned
-- implemented components: none
-- remaining components: definition/references/callers/callees/implementations/tests/commits/tasks/specs/sessions/memories/failures navigation
-- tests: none
+- current status: verification
+- implemented components: definition node lookup, callers/callees/references via graph neighbors; TUI graph explorer lists neighbors
+- remaining components: implementations/tests/commits/tasks/specs/sessions/memories/failures as a single inspector surface
+- tests: callers_and_callees_follow_call_edges, cross_file_calls_are_resolved
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S008 Git temporal intelligence
 
@@ -238,7 +229,7 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - dependencies: S001, S056
 - current status: verification
 - implemented components: commit/branch/tag/worktree indexing via porcelain; commit nodes after commit; rename parse; Author nodes with created_by
-- remaining components: symbol-level change derivation; historical question compiler wiring; call/reference edges remain intra-file in rune-index
+- remaining components: symbol-level change derivation; historical question compiler wiring
 - tests: git_commit_nodes_created_after_a_commit, parses_commit_log_and_renames
 - known failures: none recorded
 - benchmark status: not_run
@@ -364,8 +355,8 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - dependencies: S016, S003
 - current status: verification
 - implemented components: overlapping files/symbols refuse conflict-free claims; confidence and explanation; no claim without evidence
-- remaining components: schema/migration/generated-artifact overlap; S080 integration
-- tests: parallelization_refuses_conflict_free_claim_when_same_file_listed, parallelization_refuses_without_resource_evidence
+- remaining components: schema/migration/generated-artifact overlap
+- tests: parallelization_refuses_conflict_free_claim_when_same_file_listed, parallelization_refuses_without_resource_evidence, s080_full_cross_subsystem_lifecycle
 - known failures: none recorded
 - benchmark status: not_run
 - documentation status: partial
@@ -462,10 +453,10 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - dependencies: S006, S007, S011, S013, S015, S016, S008, S030
 - current status: verification
 - implemented components: compile pipeline with budget, pin, exclude, capsule diff; CLI retrievers use MemoryStore/TaskStore/SpecStore so stale memory is omitted from guidance
-- remaining components: semantic retriever; compiler eval (S063); inspector UI event loop
-- tests: compiler::tests::{compiler_respects_budget, pinned_item_is_included, excluded_item_is_omitted, capsule_diff_shows_added_and_removed}
+- remaining components: neural semantic retriever; inspector UI event loop
+- tests: compiler::tests::{compiler_respects_budget, pinned_item_is_included, excluded_item_is_omitted, capsule_diff_shows_added_and_removed}; compiler_s063
 - known failures: none recorded
-- benchmark status: not_run
+- benchmark status: pass
 - documentation status: partial
 - integration status: partial
 
@@ -545,10 +536,10 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - owner: rune-docs-context
 - dependencies: S033, S056
 - current status: verification
-- implemented components: Context7 provider adapter; versioned objects; Query fails clearly when network/policy denied
-- remaining components: TLS HTTPS client (default URL is HTTPS; TCP client is HTTP-only)
-- tests: docs_context unit tests
-- known failures: live HTTPS fetch returns Unavailable unless an http:// endpoint is configured
+- implemented components: Context7 provider adapter; HTTPS via ureq/rustls (port 443) plus HTTP TCP; versioned objects; Query fails clearly when network/policy denied; `data_leaving_machine` disclosure
+- remaining components: live fetch against the public Context7 API is not certified in CI; version pinning UX
+- tests: docs_context unit tests for https/http parse and network-policy denied
+- known failures: none recorded
 - benchmark status: not_run
 - documentation status: partial
 - integration status: partial
@@ -584,16 +575,16 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S033 OSS provider framework
 
 - specification: S033
-- owner: unassigned
+- owner: rune-providers
 - dependencies: S054
-- current status: planned
-- implemented components: none
-- remaining components: Provider trait, capabilities, async operations
-- tests: none
+- current status: verification
+- implemented components: Provider trait, identity, capabilities, optional data_leaving_machine disclosure
+- remaining components: async query/execute/stream/inspect/export/import as a uniform runtime, not only per-adapter methods
+- tests: provider registry and capability tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S034 Required OSS research targets
 
@@ -696,58 +687,58 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S041 Shared element transitions
 
 - specification: S041
-- owner: unassigned
+- owner: rune-motion
 - dependencies: S040
-- current status: planned
-- implemented components: none
-- remaining components: rectangle/style interpolation, disabled-motion fallback
-- tests: none
+- current status: active
+- implemented components: rectangle/style interpolation, reduced-motion instant path
+- remaining components: live shared-element from palette hit to inspector header in the TUI event loop
+- tests: shared_element_reaches_new_rect, reduced_motion_zeroes_duration
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S042 Adaptive rendering
 
 - specification: S042
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S002, S040
-- current status: planned
-- implemented components: none
-- remaining components: event-driven static frames, 30/60 fps budgets, buffer diffing, synchronized updates
-- tests: none
+- current status: active
+- implemented components: live TUI event loop, buffer-diff skip, motion frame budgets
+- remaining components: measured 30/60 fps on reference terminals; synchronized updates where supported
+- tests: buffer_diff_skips_identical_frames; rune-ui render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S043 Graph explorer
 
 - specification: S043
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S039, S100
-- current status: planned
-- implemented components: none
-- remaining components: pan, zoom abstraction, focus, expand/collapse, filters, path, compare, provenance, small-screen layout
-- tests: none
+- current status: active
+- implemented components: TUI graph view with focus, neighbor expand/collapse, kind filter, path list
+- remaining components: pan/zoom abstraction, subgraph compare, provenance panel, small-screen layout polish
+- tests: rune-ui graph explorer tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S044 Context inspector
 
 - specification: S044
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S024, S092, S039
-- current status: planned
-- implemented components: none
-- remaining components: live compiler view, pin/remove before invocation
-- tests: none
+- current status: active
+- implemented components: inspector snapshot with budget, included objects, reasons
+- remaining components: pin/remove before invocation in the live event loop; excluded-candidate list
+- tests: rune-ui inspector render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S045 Memory timeline
 
@@ -766,72 +757,72 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S046 Session explorer
 
 - specification: S046
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S009, S010, S039
-- current status: planned
-- implemented components: none
-- remaining components: unified explorer with filters and actions
-- tests: none
+- current status: active
+- implemented components: unified session list with provider/project filters in the TUI
+- remaining components: resume/fork/handoff/compare actions from the explorer
+- tests: rune-ui session explorer render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S047 Agent cockpit
 
 - specification: S047
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S019, S020, S039
-- current status: planned
-- implemented components: none
-- remaining components: agent cards and event stream navigation
-- tests: none
+- current status: active
+- implemented components: agent cards with provider, task, status, recent events
+- remaining components: live event stream navigation; token/cost when providers emit them
+- tests: rune-ui cockpit render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S048 Task graph view
 
 - specification: S048
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S016, S039
-- current status: planned
-- implemented components: none
-- remaining components: status rendering, blockers, assignment
-- tests: none
+- current status: active
+- implemented components: ready/active/blocked/failed/review/complete rendering and blocker text
+- remaining components: assignment to agents from the view
+- tests: rune-ui task graph render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S049 Specification coverage view
 
 - specification: S049
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S015, S003, S051, S039
-- current status: planned
-- implemented components: none
-- remaining components: requirement-to-evidence mapping, unimplemented detection
-- tests: none
+- current status: active
+- implemented components: requirement-to-evidence list and uncovered detection in the TUI
+- remaining components: jump to implementing symbols/tests/commits from the view
+- tests: rune-ui spec coverage render tests; S080 coverage link
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S050 Diff intelligence
 
 - specification: S050
-- owner: unassigned
+- owner: rune-index
 - dependencies: S003, S008, S013, S016, S015
-- current status: planned
-- implemented components: none
-- remaining components: impact calculation for review compilation
-- tests: none
+- current status: verification
+- implemented components: `impact_for_files` returns changed symbols, dependents, tests, tasks, specs, potentially stale memories, related decisions; CLI `rune impact`
+- remaining components: automatic review-capsule compilation from impact; Git hunk-level symbol mapping
+- tests: s080_full_cross_subsystem_lifecycle uses impact_for_files
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S051 Test intelligence
 
@@ -864,30 +855,30 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S053 Environment awareness
 
 - specification: S053
-- owner: unassigned
+- owner: rune-security
 - dependencies: S054
-- current status: planned
-- implemented components: none
-- remaining components: nonsecret facts, secret detection and redaction
-- tests: none
+- current status: verification
+- implemented components: nonsecret project facts; secret detection and redaction before persist/export/crash bundles
+- remaining components: richer environment census in onboard
+- tests: export_redacts_akia_keys, crash_bundle_redacts_secrets
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S054 Security model
 
 - specification: S054
-- owner: unassigned
+- owner: rune-security
 - dependencies: none
-- current status: planned
-- implemented components: none
-- remaining components: untrusted data rule, permission boundaries, explicit policy
-- tests: none
+- current status: verification
+- implemented components: untrusted content wrapping, permission policy, filesystem/process/network/plugin/MCP/agent boundaries
+- remaining components: end-to-end audit of every provider payload
+- tests: rune-security policy tests; S055 corpus
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S055 Prompt injection resistance
 
@@ -906,44 +897,44 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S056 Storage
 
 - specification: S056
-- owner: unassigned
+- owner: rune-storage
 - dependencies: none
-- current status: planned
-- implemented components: none
-- remaining components: SQLite canonical store, FTS5, blobs, separated concerns
-- tests: none
+- current status: verification
+- implemented components: SQLite nodes/edges/provenance/FTS5/settings; content-addressed blobs
+- remaining components: measured size on very large repositories (S066)
+- tests: storage unit and migration tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S057 Database migrations
 
 - specification: S057
-- owner: unassigned
+- owner: rune-storage
 - dependencies: S056
-- current status: planned
-- implemented components: none
-- remaining components: numbered migrations, fresh/upgrade/interrupted/invalid tests, no silent destroy
-- tests: none
+- current status: verification
+- implemented components: numbered migrations, fresh DB, checksum mismatch, interrupted retry; no silent destroy
+- remaining components: rollback strategy where practical
+- tests: storage migration tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S058 Content addressed cache
 
 - specification: S058
-- owner: unassigned
+- owner: rune-storage
 - dependencies: S056
-- current status: planned
-- implemented components: none
-- remaining components: fingerprint keys, invalidation
-- tests: none
+- current status: verification
+- implemented components: Blake3 blob/cache keys; fingerprint invalidation
+- remaining components: cache of embeddings/layouts at repository scale
+- tests: storage cache tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S059 Semantic provider abstraction
 
@@ -951,9 +942,9 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - owner: rune-semantic
 - dependencies: S033
 - current status: verification
-- implemented components: LocalEmbed/RemoteEmbed/LocalLlm/RemoteLlm/Disabled; Disabled declares no Embed/Complete; embed/complete only if ProcessBackend configured
-- remaining components: bundled local model is not shipped (correct); wire ProcessBackend to a real embedder
-- tests: disabled_embed_does_not_invent_vectors, disabled_provider_still_allows_manual_component_summary
+- implemented components: LocalEmbed/RemoteEmbed/LocalLlm/RemoteLlm/Disabled; Disabled declares no Embed/Complete; LocalEmbed without a process backend uses the hashed n-gram embedder (not a neural model)
+- remaining components: wire ProcessBackend to a real local/remote embedder; do not mix embeddings across providers
+- tests: disabled_embed_does_not_invent_vectors, disabled_provider_still_allows_manual_component_summary, hash_embed unit tests
 - known failures: none recorded
 - benchmark status: not_run
 - documentation status: partial
@@ -976,85 +967,85 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S061 Observability
 
 - specification: S061
-- owner: unassigned
+- owner: rune-telemetry
 - dependencies: none
-- current status: planned
-- implemented components: none
-- remaining components: structured tracing, secret-safe logs, exportable debug logs
-- tests: none
+- current status: verification
+- implemented components: structured tracing, secret-safe log export
+- remaining components: richer operation metrics (index duration, render duration) in exported debug logs
+- tests: exported_logs_redact_secrets
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S062 Evaluation framework
 
 - specification: S062
-- owner: unassigned
+- owner: rune-evals
 - dependencies: S056
-- current status: planned
-- implemented components: none
-- remaining components: reproducible evals stored in `docs/benchmarks/`
-- tests: none
+- current status: verification
+- implemented components: named evals, `rune eval`, optional `RUNE_WRITE_BENCHMARKS=1` writes `docs/benchmarks/*.json`
+- remaining components: larger evidence corpora; CI job that fails on metric regression
+- tests: rune-evals unit tests; cargo test -p rune-evals
 - known failures: none recorded
-- benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- benchmark status: pass
+- documentation status: partial
+- integration status: partial
 
 ## S063 Context compiler evaluation
 
 - specification: S063
-- owner: unassigned
+- owner: rune-evals
 - dependencies: S062, S024
-- current status: planned
-- implemented components: none
-- remaining components: evidence-backed questions and metrics
-- tests: none
+- current status: verification
+- implemented components: evidence recall, stale/contradiction/duplicate rates, token cost, latency; `docs/benchmarks/compiler_s063.json`
+- remaining components: larger question set with known supporting evidence beyond the synthetic store
+- tests: compiler_s063
 - known failures: none recorded
-- benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- benchmark status: pass
+- documentation status: partial
+- integration status: partial
 
 ## S064 Handoff evaluation
 
 - specification: S064
-- owner: unassigned
+- owner: rune-evals
 - dependencies: S062, S022
-- current status: planned
-- implemented components: none
-- remaining components: structured vs raw transcript comparison
-- tests: none
+- current status: verification
+- implemented components: structured handoff vs raw transcript completeness; `docs/benchmarks/handoff_s064.json`
+- remaining components: live two-agent transfer measurement
+- tests: handoff_s064, handoff_completeness
 - known failures: none recorded
-- benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- benchmark status: pass
+- documentation status: partial
+- integration status: partial
 
 ## S065 Memory evaluation
 
 - specification: S065
-- owner: unassigned
+- owner: rune-evals
 - dependencies: S062, S012, S013
-- current status: planned
-- implemented components: none
-- remaining components: extraction, rejection, freshness, isolation tests
-- tests: none
+- current status: verification
+- implemented components: extraction, inference rejection, staleness, conflict preservation; `docs/benchmarks/memory_s065.json`
+- remaining components: scope isolation corpus at repository scale
+- tests: memory_s065, memory_staleness
 - known failures: none recorded
-- benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- benchmark status: pass
+- documentation status: partial
+- integration status: partial
 
 ## S066 Performance suite
 
 - specification: S066
-- owner: unassigned
+- owner: tests/performance
 - dependencies: S079
-- current status: planned
-- implemented components: none
-- remaining components: small/medium/large/very large repos, metrics, reference hardware
-- tests: none
-- known failures: none recorded
+- current status: active
+- implemented components: repository generator and README for small/medium/large/very large tiers
+- remaining components: measured runs on reference hardware; stored results in docs/benchmarks
+- tests: tests/performance/gen.rs
+- known failures: p95 targets not measured
 - benchmark status: not_run
-- documentation status: missing
+- documentation status: partial
 - integration status: none
 
 ## S067 Responsiveness targets
@@ -1102,72 +1093,72 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S070 Configuration
 
 - specification: S070
-- owner: unassigned
+- owner: rune-core
 - dependencies: none
-- current status: planned
-- implemented components: none
-- remaining components: layered defaults/user/workspace/session configuration
-- tests: none
+- current status: active
+- implemented components: layered defaults/user/workspace/session configuration types
+- remaining components: load all layers from disk in the CLI for every key in AGENTS.md S070
+- tests: rune-core config tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S071 Themes
 
 - specification: S071
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S039, S070
-- current status: planned
-- implemented components: none
-- remaining components: semantic token themes, user themes without recompile, capability fallback
-- tests: none
+- current status: verification
+- implemented components: semantic token themes including high-contrast; ember default
+- remaining components: user themes without recompile loaded from config files
+- tests: rune-ui theme tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S072 Keybinding system
 
 - specification: S072
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S070
-- current status: planned
-- implemented components: none
-- remaining components: semantic actions, configurable bindings, conflict detection
-- tests: none
+- current status: verification
+- implemented components: semantic actions, configurable bindings, conflict detection
+- remaining components: user keymap file in the layered config
+- tests: rune-ui keybinding tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S073 Accessibility
 
 - specification: S073
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S039, S040
-- current status: planned
-- implemented components: none
-- remaining components: reduced motion, high contrast, non-color cues, keyboard-only, size adaptation
-- tests: none
+- current status: verification
+- implemented components: reduced motion, high contrast, keyboard-only navigation, non-color status labels
+- remaining components: screen-size adaptation polish
+- tests: rune-ui accessibility/theme tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S074 Onboarding
 
 - specification: S074
-- owner: unassigned
+- owner: rune-cli
 - dependencies: S001, S002, S035, S009
-- current status: planned
-- implemented components: none
-- remaining components: environment inspection, no account requirement
-- tests: none
+- current status: verification
+- implemented components: `rune onboard` environment inspection; no account creation
+- remaining components: first-run TUI wizard
+- tests: onboard detection tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S075 Import
 
@@ -1186,16 +1177,16 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S076 Export
 
 - specification: S076
-- owner: unassigned
+- owner: rune-app
 - dependencies: S032, S054
-- current status: planned
-- implemented components: none
-- remaining components: JSON/JSONL/Markdown/graph/pack export, secrets excluded by default
-- tests: none
+- current status: verification
+- implemented components: JSON/JSONL/Markdown export with secrets redacted by default
+- remaining components: graph format and context-pack export (S032)
+- tests: export_redacts_akia_keys
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S077 CLI surface
 
@@ -1203,7 +1194,7 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - owner: rune-cli
 - dependencies: S001, S006, S078
 - current status: verification
-- implemented components: `rune index|search|graph|memory|sessions|tasks|specs|handoff|context|agents|doctor|onboard|tui|export|completions`; index uses rune-index + git indexer; search uses SearchEngine
+- implemented components: `rune index|search|graph|memory|sessions|tasks|specs|handoff|context|agents|doctor|onboard|tui|export|completions|eval|impact|package|crash|update`
 - remaining components: machine-readable schema stability; sessions ingest command
 - tests: index_workspace_creates_function_nodes, search_finds_indexed_function, doctor_returns_ok_on_memory_db, guidance_retriever_omits_stale_memory
 - known failures: none recorded
@@ -1242,30 +1233,30 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S080 Cross subsystem integration tests
 
 - specification: S080
-- owner: unassigned
+- owner: rune-evals
 - dependencies: S012, S013, S016, S019, S021, S024, S049
-- current status: planned
-- implemented components: none
-- remaining components: full lifecycle chain
-- tests: none
+- current status: verification
+- implemented components: `s080_full_cross_subsystem_lifecycle` — index, cross-file calls, session memory, freshness after edit, spec/task, compile with pins, worktree edit, test run, commit+ChangedBy, handoff transfer, coverage link
+- remaining components: live agent subprocess in the chain; S049 TUI coverage view
+- tests: crates/evals/tests/s080_lifecycle.rs
 - known failures: none recorded
-- benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- benchmark status: pass
+- documentation status: partial
+- integration status: verified
 
 ## S081 Regression discipline
 
 - specification: S081
-- owner: unassigned
+- owner: tests
 - dependencies: S079
-- current status: planned
-- implemented components: none
-- remaining components: regression tests for every fix
-- tests: none
-- known failures: none recorded
+- current status: verification
+- implemented components: regression tests for cross-file calls, HTTPS URL parse, semantic ranking, S080 lifecycle
+- remaining components: dedicated corpus covering every historical bug; policy that every future fix adds a test
+- tests: cross_file_calls_are_resolved, docs_context HTTPS parse, search semantic routing, s080_full_cross_subsystem_lifecycle
+- known failures: corpus is not exhaustive
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S082 Documentation
 
@@ -1302,7 +1293,7 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 - dependencies: none
 - current status: verification
 - implemented components: Apache-2.0 LICENSE, NOTICE, per-target license notes in docs/integrations, clean-room rule for CASS rider and Caveman BSL
-- remaining components: Cargo.lock third-party notice generation at release; re-verify licenses at copied-code time (none copied)
+- remaining components: Cargo.lock third-party notice generation at release; ureq/rustls recorded in NOTICE; re-verify licenses at copied-code time (none copied)
 - tests: crates/core/tests/docs_contracts.rs::s034_research_notes_cover_required_targets_and_sections
 - known failures: none recorded
 - benchmark status: not_run
@@ -1312,142 +1303,142 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S085 Packaging
 
 - specification: S085
-- owner: unassigned
+- owner: apps/rune
 - dependencies: S077
-- current status: planned
-- implemented components: none
-- remaining components: distributable binaries, shell completion, no runtime dependency
-- tests: none
-- known failures: none recorded
+- current status: verification
+- implemented components: `scripts/package.sh` for host or rustc target; `rune package`; GitHub Actions matrix for macOS aarch64/x86_64 and Linux x86_64/arm64; sha256 sidecar
+- remaining components: published tag artifacts; Windows target; signed releases; shell completion install in the package tarball
+- tests: package.sh exists and is executable; CLI `package` subcommand
+- known failures: multi-arch artifacts have not been published from a tag build
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S086 Updates
 
 - specification: S086
-- owner: unassigned
+- owner: rune-app
 - dependencies: S057, S085
-- current status: planned
-- implemented components: none
-- remaining components: safe discovery, no silent replace during session, safe migrations
-- tests: none
+- current status: verification
+- implemented components: `rune update` / `App::check_update` discovers versions without replacing the running binary; `refuse_replace_running_binary`
+- remaining components: network latest-version fetch; post-update migration prompt
+- tests: app unit coverage around refuse_replace_running_binary and crash_bundle
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S087 Crash reporting
 
 - specification: S087
-- owner: unassigned
+- owner: rune-app
 - dependencies: S061, S054
-- current status: planned
-- implemented components: none
-- remaining components: optional local crash bundles, no automatic secrets
-- tests: none
+- current status: verification
+- implemented components: optional local crash bundle with version, platform, terminal, sanitized stack, provider disclosure, database diagnostics; `rune crash`; secrets redacted
+- remaining components: automatic capture from panics in the TUI; log export beyond the bundle note
+- tests: crash_bundle_redacts_secrets
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S088 Data ownership
 
 - specification: S088
-- owner: unassigned
+- owner: rune-providers
 - dependencies: S054
-- current status: planned
-- implemented components: none
-- remaining components: local-first, explicit network disclosure
-- tests: none
+- current status: verification
+- implemented components: `Provider::data_leaving_machine` default None; Context7 returns an HTTPS disclosure; crash bundles include provider disclosure strings; local mode does not upload
+- remaining components: per-command prompt before first network use in the TUI
+- tests: docs_context network policy denied; crash_bundle_redacts_secrets
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S089 Deterministic state inspection
 
 - specification: S089
-- owner: unassigned
+- owner: rune-context-compiler
 - dependencies: S024, S013, S016, S006, S017
-- current status: planned
-- implemented components: none
-- remaining components: evidence-bearing why-explanations
-- tests: none
+- current status: verification
+- implemented components: explain_why for capsule objects; freshness reasons; task blocked reasons; parallelization explanations
+- remaining components: search ranking evidence in the TUI
+- tests: compiler inspect tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S090 Context difference engine
 
 - specification: S090
-- owner: unassigned
+- owner: rune-context-compiler
 - dependencies: S024
-- current status: planned
-- implemented components: none
-- remaining components: capsule comparison
-- tests: none
+- current status: verification
+- implemented components: compare_capsules added/removed/changed objects and token allocation
+- remaining components: TUI diff view
+- tests: capsule_diff_shows_added_and_removed
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S091 Agent knowledge comparison
 
 - specification: S091
-- owner: unassigned
+- owner: rune-context-compiler
 - dependencies: S009, S024
-- current status: planned
-- implemented components: none
-- remaining components: observable-context comparison only
-- tests: none
+- current status: verification
+- implemented components: compare_knowledge over observable supplied context and sessions only
+- remaining components: TUI comparison view
+- tests: compiler knowledge comparison tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S092 Context provenance visualization
 
 - specification: S092
-- owner: unassigned
+- owner: rune-ui
 - dependencies: S024, S044
-- current status: planned
-- implemented components: none
-- remaining components: inspector provenance fields
-- tests: none
+- current status: active
+- implemented components: inspector fields for source, reason, freshness, token cost
+- remaining components: retrieval-path visualization beyond the reason string
+- tests: rune-ui inspector render tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S093 Context pinning
 
 - specification: S093
-- owner: unassigned
+- owner: rune-context-compiler
 - dependencies: S024
-- current status: planned
-- implemented components: none
-- remaining components: pins, stale/contradicted warnings
-- tests: none
+- current status: verification
+- implemented components: PinSet survives ranking; compile includes pins
+- remaining components: stale/contradicted pin warnings in the TUI
+- tests: pinned_item_is_included; S080 pins
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S094 Context exclusion
 
 - specification: S094
-- owner: unassigned
+- owner: rune-context-compiler
 - dependencies: S024
-- current status: planned
-- implemented components: none
-- remaining components: scoped exclusions, no silent permanence
-- tests: none
+- current status: verification
+- implemented components: scoped exclusions; excluded items omitted
+- remaining components: do not persist session exclusions as user preferences (enforced in types; TUI still needed)
+- tests: excluded_item_is_omitted
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial
 
 ## S095 Human decisions
 
@@ -1522,13 +1513,13 @@ Highest-leverage unblocked work: wire remaining TUI snapshot views into the live
 ## S100 Graph integrity
 
 - specification: S100
-- owner: unassigned
+- owner: rune-storage
 - dependencies: S056
-- current status: planned
-- implemented components: none
-- remaining components: checks and repair paths
-- tests: none
+- current status: verification
+- implemented components: dangling edges, missing objects, duplicate identities, orphaned session refs, invalid task deps, invalid provenance, migration inconsistency; repair actions on findings
+- remaining components: automatic repair CLI beyond doctor
+- tests: storage integrity tests
 - known failures: none recorded
 - benchmark status: not_run
-- documentation status: missing
-- integration status: none
+- documentation status: partial
+- integration status: partial

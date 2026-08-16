@@ -1,0 +1,13 @@
+{
+  "name": "symbol_retrieval",
+  "passed": true,
+  "metrics": {
+    "recall": 1.0
+  },
+  "details": {
+    "expected": "nod_01a00812-6f68-7503-b846-d4cfec6fc925",
+    "found": [
+      "nod_01a00812-6f68-7503-b846-d4cfec6fc925"
+    ]
+  }
+}

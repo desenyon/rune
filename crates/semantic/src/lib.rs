@@ -155,7 +155,10 @@ impl SemanticEngine {
         let mut caps = BTreeSet::new();
         match self.mode {
             SemanticMode::Disabled => {}
-            SemanticMode::LocalEmbed | SemanticMode::RemoteEmbed => {
+            SemanticMode::LocalEmbed => {
+                caps.insert(Capability::Embed);
+            }
+            SemanticMode::RemoteEmbed => {
                 if self.embedder.is_some() {
                     caps.insert(Capability::Embed);
                 }
@@ -170,7 +173,13 @@ impl SemanticEngine {
     }
 
     pub async fn embed(&self, texts: &[String], policy: &Policy) -> Result<Vec<Vec<f32>>> {
-        if self.mode == SemanticMode::Disabled || self.embedder.is_none() {
+        if self.mode == SemanticMode::Disabled {
+            return Err(SemanticError::Disabled);
+        }
+        if self.embedder.is_none() && matches!(self.mode, SemanticMode::LocalEmbed) {
+            return Ok(texts.iter().map(|t| hash_embed(t)).collect());
+        }
+        if self.embedder.is_none() {
             return Err(SemanticError::Disabled);
         }
         if !policy.permits(Permission::ProcessExecute) {
@@ -234,6 +243,35 @@ impl SemanticEngine {
             .unwrap_or_default()
             .to_string())
     }
+}
+
+/// Local hashing embedder used when no process backend is configured.
+fn hash_embed(text: &str) -> Vec<f32> {
+    const DIM: usize = 256;
+    let mut vec = vec![0f32; DIM];
+    let lower = text.to_ascii_lowercase();
+    let bytes = lower.as_bytes();
+    if bytes.len() < 3 {
+        for b in bytes {
+            vec[(*b as usize) % DIM] += 1.0;
+        }
+    } else {
+        for window in bytes.windows(3) {
+            let mut h = 0x811c9dc5u32;
+            for b in window {
+                h ^= u32::from(*b);
+                h = h.wrapping_mul(0x01000193);
+            }
+            vec[(h as usize) % DIM] += 1.0;
+        }
+    }
+    let norm = vec.iter().map(|v| v * v).sum::<f32>().sqrt();
+    if norm > 0.0 {
+        for v in &mut vec {
+            *v /= norm;
+        }
+    }
+    vec
 }
 
 #[async_trait]
@@ -444,6 +482,22 @@ mod tests {
         );
         let fetched = semantic.for_structural_node(file_id).unwrap();
         assert_eq!(fetched[0].validity, Validity::Stale);
+    }
+
+    #[tokio::test]
+    async fn local_embed_without_process_uses_hashing() {
+        let engine = SemanticEngine {
+            mode: SemanticMode::LocalEmbed,
+            embedder: None,
+            completer: None,
+        };
+        assert!(engine.capabilities().contains(&Capability::Embed));
+        let vectors = engine
+            .embed(&["authentication tokens".into()], &Policy::local_default())
+            .await
+            .unwrap();
+        assert_eq!(vectors.len(), 1);
+        assert_eq!(vectors[0].len(), 256);
     }
 
     #[tokio::test]
