@@ -1,0 +1,20 @@
+[package]
+name = "rune-evals"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Reproducible evaluations for retrieval, memory freshness, handoff, and compilation."
+
+[dependencies]
+rune-context-compiler.workspace = true
+rune-core.workspace = true
+rune-handoff.workspace = true
+rune-storage.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
