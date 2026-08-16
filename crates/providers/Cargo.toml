@@ -1,0 +1,20 @@
+[package]
+name = "rune-providers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Capability-declared provider framework for tools, agents, and documentation."
+
+[dependencies]
+async-trait.workspace = true
+rune-core.workspace = true
+rune-security.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
