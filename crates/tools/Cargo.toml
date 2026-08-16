@@ -1,0 +1,24 @@
+[package]
+name = "rune-tools"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Machine-readable CLI tool adapters for Rune."
+
+[dependencies]
+async-trait.workspace = true
+dirs.workspace = true
+rune-core.workspace = true
+rune-providers.workspace = true
+rune-security.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+which.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
