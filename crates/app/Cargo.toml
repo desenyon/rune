@@ -1,0 +1,25 @@
+[package]
+name = "rune-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Workspace orchestrator, layered configuration, export, and failure recovery."
+
+[dependencies]
+dirs.workspace = true
+rune-core.workspace = true
+rune-graph.workspace = true
+rune-providers.workspace = true
+rune-security.workspace = true
+rune-storage.workspace = true
+rune-telemetry.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
