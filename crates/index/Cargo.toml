@@ -1,0 +1,31 @@
+[package]
+name = "rune-index"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description = "Workspace discovery, structural indexing, file watching, and process awareness for Rune."
+
+[dependencies]
+ignore.workspace = true
+notify.workspace = true
+rune-core.workspace = true
+rune-graph.workspace = true
+rune-storage.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tree-sitter.workspace = true
+tree-sitter-go.workspace = true
+tree-sitter-javascript.workspace = true
+tree-sitter-python.workspace = true
+tree-sitter-rust.workspace = true
+tree-sitter-typescript.workspace = true
+walkdir.workspace = true
+which.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
